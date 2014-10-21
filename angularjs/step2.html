@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>step2 factory</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+</head>
+
+<body ng-app="myApp">
+
+  <div ng-controller="MainCtrl">
+    <button ng-click="Auth.login()" ng-if="!Auth.isLoggedIn">
+      login
+    </button>
+
+    <div ng-if="Auth.isLoggedIn">
+      Hi {{Auth.currentUser.name}} !
+    </div>
+  </div>
+
+
+  <script>
+    angular.module('myApp', [])
+      .factory('Auth', function(){
+        var Auth = this;
+
+        Auth.isLoggedIn = false;
+        Auth.currentUser = {};
+
+        Auth.login = function() {
+          Auth.isLoggedIn = true;
+          Auth.currentUser = { name: 'taro' }
+        };
+
+        return Auth;
+      })
+
+      .controller('MainCtrl', function($scope, Auth) {
+        $scope.Auth = Auth;
+      });
+  </script>
+</body>
+</html>

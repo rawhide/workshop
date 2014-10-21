@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>omake</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/0.10.5/vue.min.js"></script>
+  <script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.0.0.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.2.1/backbone.marionette.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/backbone.stickit/0.8.0/backbone.stickit.min.js"></script>
+</head>
+<body>
+
+
+
+
+
+  <h1>angular</h1>
+  <div ng-app="angularTodo" ng-controller="TodoCtrl">
+    <form>
+      <input type="text" ng-model="newTodo.name">
+      <button type="submit" ng-click="add()">add</button>
+    </form>
+
+    <ul>
+      <li ng-repeat="todo in todos">{{todo.name}}</li>
+    </ul>
+
+    <script type="text/javascript">
+      angular.module('angularTodo', []).
+        controller('TodoCtrl', function($scope) {
+          $scope.todos = [];
+          $scope.newTodo = {};
+
+          $scope.add = function() {
+            $scope.todos.push($scope.newTodo);
+            $scope.newTodo = {};
+          };
+        });
+    </script>
+  </div>
+
+
+
+
+
+  <h1>vue</h1>
+  <div id="todo-vue-vm">
+    <form>
+      <input type="text" v-model="newTodo.name">
+      <button type="submit" v-on="click: add">add</button>
+    </form>
+
+    <ul>
+      <li v-repeat="todos">{{name}}</li>
+    </ul>
+
+    <script type="text/javascript">
+      var vm = new Vue({
+        el: '#todo-vue-vm',
+
+        data: {
+          todos: [],
+          newTodo: {}
+        },
+
+        methods: {
+          add: function(e) {
+            e.preventDefault();
+            this.todos.push(this.newTodo);
+            this.newTodo = {};
+          }
+        }
+      });
+    </script>
+  </div>
+
+
+
+
+
+  <h1>knockout</h1>
+  <div id="todo-ko-vm">
+    <form data-bind="submit: add">
+      <input data-bind="value: name">
+      <button type="submit">add</button>
+    </form>
+
+    <ul data-bind="foreach: todos">
+      <li data-bind="text: name"></li>
+    </ul>
+
+    <script type="text/javascript">
+      var vm = function() {
+        var self = this;
+
+        self.todos = ko.observableArray();
+        self.name = ko.observable('');
+
+        self.add = function () {
+          self.todos.push({ name: self.name() });
+          self.name('');
+        }.bind(self);
+      };
+
+      ko.applyBindings(new vm(), document.getElementById('todo-ko-vm'));
+    </script>
+  </div>
+
+
+
+
+
+  <h1>backbone</h1>
+  <div id="todo-backbone">
+    <form id="new-todo">
+      <input type="text" id="new-todo-name">
+      <button type="submit">add</button>
+    </form>
+
+    <ul id="todo-list"></ul>
+
+    <script type="text/javascript">
+      $(function(){
+        var Todo = Backbone.Model.extend({});
+
+        var Todos = Backbone.Collection.extend({
+          model: Todo
+        });
+
+        var TodoView = Marionette.ItemView.extend({
+          tagName: 'li',
+          template: _.template('<%- name %>')
+        });
+
+        var TodosView = Marionette.CollectionView.extend({
+          el: '#todo-list',
+          childView: TodoView
+        });
+
+        var AddView = Marionette.ItemView.extend({
+          el: '#new-todo',
+          initialize: function() {
+            this.model = new Todo();
+            this.stickit();
+          },
+          bindings: {
+            '#new-todo-name': 'name'
+          },
+          events: {
+            submit: 'addTodo'
+          },
+          addTodo: function(e) {
+            e.preventDefault();
+            this.collection.add(this.model);
+            this.model = new Todo();
+            this.stickit();
+          }
+        });
+
+        var todos = new Todos();
+
+        var addView = new AddView({ collection: todos });
+        var todosView = new TodosView({ collection: todos });
+
+        todosView.render();
+      });
+    </script>
+  </div>
+
+
+
+
+
+</body>
+</html>

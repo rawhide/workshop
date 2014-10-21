@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>step1 Todoアプリ</title>
+  <meta charset="utf-8">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
+</head>
+
+<body ng-app="todoApp">
+
+  <div ng-controller="TodoController">
+    <form>
+      <input type="text" ng-model="newTodo.name">
+      <button ng-click="add()">add</button>
+    </form>
+
+    <ul>
+      <li ng-repeat="todo in todos">
+        {{todo.name}}
+        <button ng-click="remove($index)">remove</button>
+      </li>
+    </ul>
+  </div>
+
+
+  <script>
+    angular.module('todoApp', [])
+      .controller('TodoController', function($scope) {
+        $scope.todos = [];
+        $scope.newTodo = {};
+
+        $scope.add = function() {
+          $scope.todos.push($scope.newTodo);
+          $scope.newTodo = {};
+        };
+
+        $scope.remove = function(index) {
+          $scope.todos.splice(index, 1);
+        };
+      });
+  </script>
+</body>
+</html>
